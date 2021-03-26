@@ -8,7 +8,7 @@ Automated compliance solutions offered:
 
 Below is a conceptual diagram for this solution: 
 
-![Diagram](https://github.com/ab-lumos/s3-encryption-auto-remediation/blob/main/arch_diagram_auto_drift.png)
+![Diagram](https://github.com/ab-lumos/s3-encryption-auto-remediation/blob/main/arch_diagram_auto_drift.pg)
 
 ## Resources Created
 The following resources would be created as part of this code:
