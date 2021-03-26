@@ -1,37 +1,36 @@
-## Welcome to GitHub Pages
+# Auto-drift encryption of AWS S3 - Security Guide
+This security guide shows you how to create automated remediation infrastructure in AWS that continuously checks for create and update S3 bucket events which result in unencrypted S3 buckets (or encrypted in a non-standard way) and automatically encrypts them per compliance guidelines. This infrastructure also includes an exception mechanism to put exceptions on S3 buckets which do not need to be encrypted for a time-bound duration. The infrastructure also identifies if any S3 bucket is encrypted with a KMS key “not” enabled for auto-rotation and enables that feature. All of the actions performed by the solution is recorded in a DynamoDB database with timestamps.
 
-You can use the [editor on GitHub](https://github.com/ab-lumos/s3-encryption-auto-remediation/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Automated compliance solutions offered:
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+1. Encryption at-rest for S3 buckets
+2. Enablement of auto rotation of KMS keys used for encryption of S3 buckets
 
-### Markdown
+Below is a conceptual diagram for this solution: 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+![Diagram](https://github.com/ab-lumos/s3-encryption-auto-remediation/blob/main/arch_diagram_auto_drift.png)
 
-```markdown
-Syntax highlighted code block
+## Resources Created
+The following resources would be created as part of this code:
 
-# Header 1
-## Header 2
-### Header 3
+    1. *CloudWatch Event rule* - Triggers Lambda whenever S3 bucket is created or its configuration modified
+    2. *AWS IAM Role* - Role attached to Lambda function
+    3. *AWS IAM Policy* - Policy attached to above role
+    4. *Lambda Function* - Performs the event-driven Compute of the infrastructure
+    5. *Exception database (DynamoDB)* - Stores S3 bucket name and expiry time for exceptions
+    6. *Recording Database (DynamoDB)*  - Records all actions performed by the Lambda function
+    7. *KMS CMEK 1* - For encrypting S3 bucket
+    8. *KMS CMEK 2* - For encrypting Lambda environment variables and the DynamoDB tables
 
-- Bulleted
-- List
+## Customize the parameters
+1. Update the names of AWS resources if required by updating the terraform.tfvars
+2. If exceptions are needed for S3 bucket, please update the terraform.tfvars file location as below:
 
-1. Numbered
-2. List
+{"sample-s3-bucket"="12/31/20 00:00","sample2-s3-bucket2"="None"}
 
-**Bold** and _Italic_ and `Code` text
+Please note the format for the Expiry has to be in the same format as mentioned above. If no expiry timestamp needs to be mentioned, then “None” should be mentioned. Do not leave this field blank.
 
-[Link](url) and ![Image](src)
-```
+## Next Steps
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+The solution can be updated to include other resources as well like encryption for databases - RDS, DynamoDB and also entirely different compliance controls like - enablement of S3 access logging. 
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ab-lumos/s3-encryption-auto-remediation/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
